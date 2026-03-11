@@ -1,4 +1,3 @@
-# Definition for a binary tree node.
 from typing import List, Optional
 
 
@@ -10,31 +9,26 @@ class TreeNode:
 
 
 class Solution:
-    def helper(self, root: Optional[TreeNode]) -> List[int]:
+    def helper(self, root: Optional[TreeNode], ans):
         if not root:
-            return None
-        if not root.left and not root.right:
-            return [root.val, root.val]
+            return float("-inf")
 
-        left = self.helper(root.left)
-        right = self.helper(root.right)
-
-        if root.left and not root.right:
-            """maxSum = max(root.val, left[1], root.val + left[1])"""
-            if root.val > left[1]:
-                return [root.val,root.val]
-
-        if not root.left and root.right:
-            """maxSum = max(root.val, right[1], root.val + right[1])"""
-            pathSum = right[1] + root.val if right[1] > root.val else root.val
-            return [max(right[1], pathSum), pathSum]
-
-        pathSum = max(left[1], right[1])
-
-        if pathSum > root.val:
-            return [max(pathSum, root.val, root.val + pathSum), pathSum + root.val]
-
-        return [max(pathSum, root.val), root.val]
+        left = self.helper(root.left, ans)
+        right = self.helper(root.right, ans)
+        # find max path
+        ans[0] = max(
+            ans[0],
+            root.val,
+            # left,
+            # right,
+            root.val + left,
+            root.val + right,
+            root.val + left + right,
+        )
+        # choosing max path from left or right
+        return max(left + root.val, right + root.val, root.val)
 
     def maxPathSum(self, root: Optional[TreeNode]) -> int:
-        return self.helper(root)[0]
+        ans = [float("-inf")]
+        self.helper(root, ans)
+        return ans[0]
